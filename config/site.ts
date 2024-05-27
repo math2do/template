@@ -5,7 +5,7 @@ export const siteConfig = {
     "This is an attempt to share my thoughts and skills I have acquired over years as a software engineer. Through this I aim to connect with other developers and learn together.",
   links: {
     portFolio: "https://math2do.in/portfolio",
-    github: "https://github.com/math2do/next-js",
+    github: "https://github.com/math2do/template",
   },
 };
 
