@@ -1,13 +1,20 @@
 import type { Metadata } from "next";
-import { Inter, Roboto, Cantarell, Poppins } from "next/font/google";
+import {
+  Inter,
+  Roboto,
+  Cantarell,
+  Poppins,
+  Ubuntu,
+  Open_Sans,
+} from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import SiteHeader from "@/components/site-header";
 import SiteFooter from "@/components/site-footer";
 
-const fontOption = Inter({
-  weight: ["400", "500", "700"],
+const fontOption = Open_Sans({
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
   variable: "--font-sans",
 });
