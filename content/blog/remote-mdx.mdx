@@ -1,0 +1,180 @@
+---
+title: Remote MDX files
+description: Showing Remote MDX files
+---
+
+This is about showing or rendering remote MDX files to be shown to your website. For this install this package using: `npm install next-mdx-remote{:sh}`. Many import can be removed..
+
+```js
+import React, { HtmlHTMLAttributes } from 'react';
+import GoOptmization from './go-optimization.mdx';
+import MaxWidthWrapper from '@/components/max-width-wrapper';
+import MdxWrapper from '@/components/mdx-wrapper';
+import ThemeToggler from '@/components/theme-toggler';
+import { promises as fs } from 'fs';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkGfm from 'remark-gfm';
+import remarkToc from 'remark-toc';
+import { codeImport as remarkCodeImport } from 'remark-code-import';
+import rehypeSanitize from 'rehype-sanitize';
+import rehypeSlug from 'rehype-slug';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import rehypePrettyCode from 'rehype-pretty-code';
+import { transformerNotationDiff } from '@shikijs/transformers';
+import rehypeStringify from 'rehype-stringify';
+import remarkRehype from 'remark-rehype';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkParseFrontmatter from 'remark-parse-frontmatter';
+import remarkMdx from 'remark-mdx';
+import { compile, evaluate } from '@mdx-js/mdx';
+
+// using mdxRemote
+import { serialize } from 'next-mdx-remote/serialize';
+import { MDXRemote } from 'next-mdx-remote/rsc';
+import { compileMDX } from 'next-mdx-remote/rsc';
+import Hello from '@/components/hello';
+// import MDXComponent from '@/components/mdx-component';
+import ExternalLink from '@/components/external-link';
+import { visit } from 'unist-util-visit';
+// import { Pre } from '@/components/Pre';
+import { CopyButton } from '@/components/copy-button';
+import clsx from 'clsx';
+
+// 2. Using MdxRemote
+// no import component inside mdx required,
+
+export default async function Page() {
+  const source = 'Some **mdx** text, with a component';
+  const mdxContent = await fs.readFile(
+    process.cwd() + '/app/content/blog/go-optimization/go-optimization.mdx',
+    'utf8',
+  );
+
+  // <pre {...props} className={clsx('relative', props.className)}>
+  //     {children}
+  //     <CopyButton text={raw} className={buttonClasses} />
+  //   </pre>
+
+  const components = {
+    Hello,
+    ExternalLink,
+    pre: ({ children, __rawString__, ...props }: any) => (
+      <pre {...props} className={clsx('relative', props.className)}>
+        <CopyButton raw={__rawString__} />
+        {children}
+      </pre>
+    ),
+  };
+
+  // const mdxSource = await serialize(source);
+
+  const { content, frontmatter } = await compileMDX<{
+    title: string;
+    description: string;
+  }>({
+    source: mdxContent,
+    components: components,
+    options: {
+      parseFrontmatter: true,
+      mdxOptions: {
+        format: 'mdx',
+        remarkPlugins: [
+          [remarkFrontmatter, { type: 'yaml', marker: '-' }],
+          remarkParseFrontmatter,
+          remarkParse,
+          remarkMdx,
+          remarkGfm,
+          remarkToc,
+          remarkCodeImport,
+        ],
+        rehypePlugins: [
+          // rehypeSanitize,
+          preProcess,
+          rehypeSlug,
+          [rehypeAutolinkHeadings, { behavior: 'wrap' }],
+          [
+            rehypePrettyCode,
+            {
+              transformers: [transformerNotationDiff()],
+              theme: 'one-light', // checkout other themes here: https://shiki.style/themes
+              keepBackground: false,
+              tokensMap: {
+                fn: 'entity.name.function', //check here : https://rehype-pretty.pages.dev/
+                // get vs code entities name: https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide
+              },
+            },
+          ],
+          postProcess,
+        ],
+      },
+    },
+  });
+
+  console.log('frontmatter', frontmatter);
+
+  return (
+    <MaxWidthWrapper>
+      <ThemeToggler />
+      <MdxWrapper>{content}</MdxWrapper>
+    </MaxWidthWrapper>
+  );
+}
+
+
+const preProcess = () => (tree: any) => {
+  visit(tree, (node) => {
+    if (node?.type === 'element' && node?.tagName === 'pre') {
+      const [codeEl] = node.children;
+      if (codeEl.tagName !== 'code') {
+        return;
+      }
+
+      if (codeEl.data?.meta) {
+        // Extract event from meta and pass it down the tree.
+        const regex = /event="([^"]*)"/;
+        const match = codeEl.data?.meta.match(regex);
+        if (match) {
+          node.__event__ = match ? match[1] : null;
+          codeEl.data.meta = codeEl.data.meta.replace(regex, '');
+        }
+      }
+
+      node.__rawString__ = codeEl.children?.[0].value;
+      node.__src__ = node.properties?.__src__;
+      node.__style__ = node.properties?.__style__;
+    }
+  });
+};
+
+const postProcess = () => (tree: any) => {
+  visit(tree, (node) => {
+    if (node?.type === 'element' && node?.tagName === 'figure') {  // !!Note thae figure is parent of pre in final html
+      const preElement =
+        node.children.at(-1).tagName == 'figcaption'
+          ? node.children.at(-2)
+          : node.children.at(-1);
+      if (preElement.tagName !== 'pre') {
+        return;
+      }
+
+      preElement.properties['__withMeta__'] =
+        node.children.at(0).tagName === 'div';
+      preElement.properties['__rawString__'] = node.__rawString__;
+
+      if (node.__src__) {
+        preElement.properties['__src__'] = node.__src__;
+      }
+
+      if (node.__event__) {
+        preElement.properties['__event__'] = node.__event__;
+      }
+
+      if (node.__style__) {
+        preElement.properties['__style__'] = node.__style__;
+      }
+    }
+  });
+};
+
+```

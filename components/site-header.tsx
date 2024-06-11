@@ -1,17 +1,17 @@
-import { Terminal } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Icons } from "@/components/svg-icons";
-import { siteConfig } from "@/config/site";
-import ThemeToggler from "@/components/theme-toggler";
-import { Separator } from "@/components/ui/separator";
-import MaxWidthWrapper from "./max-width-wrapper";
+import { Terminal } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Icons } from '@/components/svg-icons';
+import { siteConfig } from '@/config/site';
+import ThemeToggler from '@/components/theme-toggler';
+import { Separator } from '@/components/ui/separator';
+import MaxWidthWrapper from './max-width-wrapper';
 
 const SiteHeader = () => {
   return (
     <section className="sticky top-0 w-full backdrop-blur-xl backdrop-opacity-100">
       <MaxWidthWrapper>
-        <nav className="mx-auto flex max-w-full items-center  justify-between rounded-md py-2">
+        <nav className="mx-auto flex h-14 max-w-full items-center justify-between rounded-md">
           <Link href="/">
             <div className="flex cursor-pointer items-end text-xl">
               <Terminal className="h-full w-full" />

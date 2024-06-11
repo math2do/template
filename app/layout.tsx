@@ -1,26 +1,13 @@
-import type { Metadata } from "next";
-import {
-  Inter,
-  Roboto,
-  Cantarell,
-  Poppins,
-  Ubuntu,
-  Open_Sans,
-} from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
-import "./globals.css";
-import { cn } from "@/lib/utils";
-
-const fontOption = Open_Sans({
-  weight: ["400", "500", "600", "700"],
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
+import type { Metadata } from 'next';
+import { fontSans, fontMono } from '@/lib/fonts';
+import { ThemeProvider } from '@/components/theme-provider';
+import './globals.css';
+import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
-  icons: "/header-icon.svg",
-  title: "Template App",
-  description: "Template App for other projects",
+  icons: '/header-icon.svg',
+  title: 'Template App',
+  description: 'Template App for other projects',
 };
 
 export default function RootLayout({
@@ -32,8 +19,9 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          "min-w-[350px] font-sans antialiased",
-          fontOption.className
+          'min-w-[350px] antialiased',
+          fontSans.className,
+          fontMono.variable,
         )}
       >
         <ThemeProvider

@@ -1,0 +1,257 @@
+---
+title: Go Optimization
+description: some short description
+---
+
+# first heading
+
+# Hello {1+1}
+
+some description. Some link [here](https://google.com)
+
+Some External Link Below:
+
+<ExternalLink href="https://github.com">Github</ExternalLink>
+
+hello should be Below:
+
+<Hello />
+
+Checking inline code highlight: `export default ContentLayout;{:js}`
+
+The name of the function is `getStringLength{:.fn}`
+
+## second heading
+
+some other description
+
+If you dynamically load the mdx content coming from remote or local files, you can use following code snippet inside your route:
+`app/content/[...slug]/page.tsx`
+
+```js title="app/content/[...slug]/page.tsx" showLineNumbers {1-6,8} /params/ /rehypeAutolinkHeadings/ caption="This is some caption added below the code"
+import React from 'react';
+import { getContentBySlug } from '@/lib/utils';
+import { compileMDX } from 'next-mdx-remote/rsc';
+import { MdxComponents } from '@/components/mdx-components';
+import remarkGfm from 'remark-gfm';
+import { codeImport as remarkCodeImport } from 'remark-code-import';
+import remarkParse from 'remark-parse';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import rehypePrettyCode from 'rehype-pretty-code';
+import rehypeSlug from 'rehype-slug';
+import rehypeSanitize from 'rehype-sanitize';
+import wrongRemarkToc from 'remark-toc'; // [!code --]
+import remarkToc from 'remark-toc'; // [!code ++]
+
+// slug has values like: ["system-design", "tiny-url"]
+type ContentPageProps = {
+  params: { slug: string[] };
+};
+
+const ContentLayout = async ({ params }: ContentPageProps) => {
+  const slug = params.slug.join('/');
+  const fileContent = await getContentBySlug(slug);
+
+  const { frontmatter, content } = await compileMDX<{
+    title: string;
+    description: string;
+  }>({
+    source: fileContent,
+    options: {
+      parseFrontmatter: true,
+      mdxOptions: {
+        remarkPlugins: [remarkParse, remarkGfm, remarkToc, remarkCodeImport],
+        rehypePlugins: [
+          rehypeSanitize,
+          rehypeSlug,
+          [rehypeAutolinkHeadings, { behavior: 'wrap' }],
+          [
+            rehypePrettyCode,
+            theme: "one-light",
+          ],
+        ],
+        format: 'mdx',
+      },
+    },
+    components: MdxComponents,
+  });
+
+  return (
+    <div>
+      <h1>{frontmatter.title}</h1>
+      <h1>{frontmatter.description}</h1>
+
+      {content}
+    </div>
+  );
+};
+
+export default ContentLayout;
+```
+
+Put following functions for utility purpose inside your `lib/utils.ts`
+
+```js showLineNumbers{5}
+// ...
+// Reading Mdx contents
+const contentDir = path.join(process.cwd(), 'content');
+
+export async function getContentBySlug(slug: string) {
+  const fileName = slug + '.mdx';
+  const filePath = path.join(contentDir, fileName);
+  const fileContent = fs.readFileSync(filePath, 'utf8');
+  return fileContent;
+}
+
+export function getAllContentSlug() {
+  const files = fs.readdirSync(contentDir);
+  const slugs = files.map((file) => ({ slug: path.parse(file).name }));
+  return slugs;
+}
+//...
+```
+
+# Testing
+
+> Let's start with some quote at the beginning
+
+Create function `IsPalindrome` for testing.
+
+```go {3}
+func IsPalindrome(str string) bool {
+  for i := range str {
+    if str[i] != str[len(str) - i - 1] {
+      return false
+    }
+  }
+  return true
+}
+```
+
+In the test file `main_test.go` Create following test function
+
+```go
+func TestPalindrome(t *testing.T) {
+  if !IsPalindrome("detartrated") {
+		t.Error(`IsPalindrome("detartrated") = false`)
+	}
+
+	if !IsPalindrome("kayak") {
+		t.Error(`IsPalindrome("kayak") = false`)
+	}
+}
+```
+
+Test the function using command:
+
+```sh
+go test -timeout 30s -run ^TestIsPalindrome$
+```
+
+# Benchmarking
+
+```go
+func MemoryWaste(int n) []int {
+  var data []int
+  for i := 0; i < n; i++ {
+    data = append(data, i)
+  }
+
+  return data
+}
+```
+
+Then create file called `main_test` to run the benchmark on the function `MemoryWaste`
+
+```go
+package main
+
+func BenchmarkMemoryWaste(b *testing.B) {
+  for i := 0; i < b.N; i++ {
+    MemoryWaste(100)
+  }
+}
+```
+
+By Default `go test ...` command will not run benchmark. We have to pass the flag `-bench=^BenchmarkMemoryWaste`. Following is the complete command to run benchmark on function `MemoryWaste`. You can vary the flags as needed.
+
+```sh
+go test -benchtime=1s -count=10 -benchmem -bench=^BenchmarkMemoryWaste$
+```
+
+You can compare two benchmark using tool called `benchstat`. Install this tool globally using:
+
+```sh
+go install golang.org/x/perf/cmd/benchstat@latest
+```
+
+Now, create two benchmark files before and after refactoring your code using output redirection:
+
+```sh
+# Create original benchmark file before optimisation
+go test -benchtime=1s -count=10 -benchmem -bench=^BenchmarkMemoryWaste$ > original.bench
+
+# Create new benchmark file after optimisation
+go test -benchtime=1s -count=10 -benchmem -bench=^BenchmarkMemoryWaste$ > refactor.bench
+
+# Compare above files using
+benchstat original.bench refactor.bench
+```
+
+## Parallel Benchmark
+
+Some functions like **http Handlers** runs concurrently. So we can run the benchmark parallely to measure their performance. So there is no need of `b.N` to loop over. The syntax for getting benchmark of function running parallely is as follows.
+
+```go
+func BenchmarkMemoryWasteParallel(b *testing.B) {
+  b.RunParallel(func (pb *testing.PB) {
+    // The number times this loops is same as maximum no of cpu cores, i,e GOMAXPROCS
+    for pb.Next() {
+      MemoryWaste(100)
+    }
+  })
+}
+```
+
+# Profiling
+
+Here are list of tools and resources.
+
+- https://pkg.go.dev/runtime/pprof
+- https://pkg.go.dev/net/http/pprof
+- https://pkg.go.dev/golang.org/x/perf/cmd/benchstat
+- https://go.dev/doc/disagonostics
+- https://github.com/google/pprof
+
+To check where the function is taking most of time. Are there any memory leaks? To find such events, Golang has tool called `pprof` for creating profile.
+
+Let's get the **cpu profile** for function `IsPalindrome`
+
+```sh
+go test -run ^TestIsPalindrome$ -cpuprofile=cpu.out
+```
+
+Analyse the profile using tool `pprof`. The following command will launch into interactive mode where you can pass commands like `) top 10` to get the profiles for top-10 functions from stack. Use command `) pdf` to get the graphs of nodes. Here is another usefull way to peek into code and profile using `) list SomeFunctionName`
+
+```sh
+go tool pprof cpu.out
+```
+
+Various types of profile:
+
+- CPU Profile
+- Memory Profile
+  - In-use space
+  - Allocated space
+- Block Profile
+- Mutex Profile
+- Goroutine Profile
+- Threadcreate Profile
+- Debug Trace
+
+Let's see some tables
+
+| heading1 | heading2 | heading3 |
+| -------- | -------- | -------- |
+| data1    | data2    | data3    |
+| data1    | data2    | data3    |

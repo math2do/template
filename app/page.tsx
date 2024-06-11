@@ -1,17 +1,9 @@
-import MaxWidthWrapper from "@/components/max-width-wrapper";
-import Link from "next/link";
+import MaxWidthWrapper from '@/components/max-width-wrapper';
 
 export default function Home() {
   return (
     <MaxWidthWrapper>
-      <ul className="space-y-4">
-        <li>
-          <Link href="/blog">Blog</Link>
-        </li>
-        <li>
-          <Link href="/blog">Testing</Link>
-        </li>
-      </ul>
+      <h1>Hello There</h1>
     </MaxWidthWrapper>
   );
 }
