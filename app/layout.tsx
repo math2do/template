@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { fontSans, fontMono } from '@/lib/fonts';
 import { ThemeProvider } from '@/components/theme-provider';
-import './globals.css';
+import '../styles/globals.css';
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {

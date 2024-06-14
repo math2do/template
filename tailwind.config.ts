@@ -84,43 +84,36 @@ const config = {
         DEFAULT: {
           css: [
             {
-              a: {
-                color: colors.blue[500],
-                '&:hover': {
-                  color: colors.blue[400],
-                  textDecoration: 'underline',
-                  transitionProperty: 'color, text-decoration',
-                  transitionDuration: '0.1s',
-                  textUnderlineOffset: '4px',
-                },
-              },
-              // override above style of 'a' in headings
-              'h1 > a,h2 > a,h3 > a,h4 > a,h5 > a,h6 > a': {
-                color: 'hsl(var(--foreground))',
-                '&:hover': {
-                  textDecoration: 'none',
-                },
-                '&::after': {
-                  // color: 'hsl(var(--muted-foreground))',
-                  // content: '"  #"',
-                },
-              },
+              // // override above style of 'a' in headings
+              // 'h1 > a,h2 > a,h3 > a,h4 > a,h5 > a,h6 > a': {
+              //   color: 'hsl(var(--foreground))',
+              //   '&:hover': {
+              //     textDecoration: 'none',
+              //   },
+              //   '&::after': {
+              //     // color: 'hsl(var(--muted-foreground))',
+              //     // content: '"  #"',
+              //   },
+              // },
               code: {
                 paddingLeft: '0.3rem',
                 paddingRight: '0.3rem',
-                paddingTop: '0.1rem',
-                paddingBottom: '0.1rem',
+                paddingTop: '0.2rem',
+                paddingBottom: '0.2rem',
                 backgroundColor: 'hsl(var(--muted))',
+                '--shiki-light-bg': 'hsl(var(--muted))',
               },
               'pre code': {
                 border: 'none',
                 padding: '0.5rem 0rem 0.5rem 0rem',
-                backgroundColor: 'hsl(var(--background))',
-                counterReset: 'line',
+                '--shiki-light-bg': 'hsl(var(--background))',
+                // backgroundColor: 'hsl(var(--background))',
               },
               'pre [data-highlighted-chars]': {
-                backgroundColor: 'hsl(var(--background))',
+                // backgroundColor: 'hsl(var(--background))',
+                backgroundColor: 'transparent',
                 textDecoration: 'underline',
+                textDecorationColor: 'hsl(var(--muted-foreground))',
                 textUnderlineOffset: '4px',
                 paddingTop: '0.1rem',
                 paddingBottom: '0.1rem',
@@ -132,38 +125,37 @@ const config = {
                 borderLeftWidth: '2.5px',
                 borderLeftColor: 'hsl(var(--background))',
               },
-              'pre code[data-line-numbers-max-digits] > [data-line]::before': {
-                counterIncrement: 'line',
-                content: `${'counter(line)'}`,
+              'pre code .line_number': {
                 display: 'inline-block',
                 width: '1rem',
                 marginRight: '1rem',
                 textAlign: 'right',
-                color: colors.gray[400],
+                '--shiki-light': colors.gray[400],
+                '--shiki-dark': colors.gray[400],
+                userSelect: 'none',
               },
-              'pre code[data-line-numbers-max-digits="2"] > [data-line]::before':
-                {
-                  width: '1rem',
-                },
-              'pre code[data-line-numbers-max-digits="3"] > [data-line]::before':
-                {
-                  width: '2rem',
-                },
               'pre [data-highlighted-line]': {
                 borderLeftWidth: '3px',
                 borderLeftColor: colors.blue[400],
-                backgroundColor: 'hsl(var(--muted))',
+                '--shiki-light-bg': 'hsl(var(--muted))',
+                '--shiki-dark-bg': 'hsl(var(--muted))',
               },
               // style git diff, should be below [data-highlighted-line] to override
               // TODO: merge the style with .diff.remove
               'pre code .diff.add': {
                 borderLeftWidth: '3px',
                 borderLeftColor: colors.green[400],
-                backgroundColor: colors.green[100],
+                '--shiki-light-bg': '#2dd4bf26',
+                '--shiki-dark-bg': '#2dd4bf26',
                 position: 'relative',
               },
+              'pre code .diff.add span, pre code .diff.remove span': {
+                '--shiki-light-bg': 'transparent',
+                '--shiki-dark-bg': 'transparent',
+              },
+
               'pre code .diff.add > span:first-child::before': {
-                color: 'hsl(var(--muted-foreground))',
+                color: colors.green[600],
                 display: 'inline-block',
                 position: 'absolute',
                 top: '0',
@@ -173,11 +165,14 @@ const config = {
               'pre code .diff.remove': {
                 borderLeftWidth: '3px',
                 borderLeftColor: colors.rose[400],
-                backgroundColor: colors.rose[100],
+                '--shiki-light-bg': '#f43f5e26',
+                '--shiki-dark-bg': '#f43f5e26',
                 position: 'relative',
+                userSelect: 'none',
               },
+
               'pre code .diff.remove > span:first-child::before': {
-                color: 'hsl(var(--muted-foreground))',
+                color: colors.red[600],
                 display: 'inline-block',
                 position: 'absolute',
                 top: '0',
@@ -201,9 +196,27 @@ const config = {
                 borderRadius: '0.25rem',
                 borderWidth: '1px',
               },
+              // left-top and right-top of pre is zero, when title is given
               '[data-rehype-pretty-code-title] + pre': {
                 borderRadius: '0 0 0.25rem 0.25rem',
               },
+              '.katex-html': {
+                display: 'none',
+              },
+              '.katex-mathml': {
+                fontSize: '1.2rem',
+              },
+              'msqrt > mrow:first-child': {
+                padding: '0.2rem',
+              },
+              '[mathvariant="normal"]': {
+                display: 'none',
+              },
+              // support for dual theme
+              // 'code[data-theme*=" "], code[data-theme*=" "] span': {
+              //   color: 'var(--shiki-light)',
+              //   backgroundColor: 'var(--shiki-light-bg)',
+              // },
             },
           ],
         },

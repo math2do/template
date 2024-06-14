@@ -3,15 +3,46 @@ title: Go Optimization
 description: some short description
 ---
 
-# first heading
+# Markdown and MDX
 
-# Hello {1+1}
+Something random
+
+## Getting Started
+
+Other rannom shit
+
+## Second Heading
+
+### Third Heading
+
+#### Fourth Heading
+
+**The Cauchy-Schwarz Inequality**
+
+```math
+\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)
+```
+
+Check here How to write maths: [Mathematical Expressions](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/writing-mathematical-expressions)
+
+Let's see about this equation. How about this inline equation: $`\sqrt{3x-1}+(1x)^2`$. Lift($$L$$) can be determined by Lift Coefficient ($$C_L$$) like the following
+equation.
+
+$$
+L = \frac{1}{2} \rho v^2 S C_L
+$$
+
+Here is another for something
+
+$$
+`\frac{\sqrt{a^2 + b^2}}{2}`
+$$
 
 some description. Some link [here](https://google.com)
 
 Some Internal Link: <Link href="/content/blog/mdx-component">Go Optimization</Link>
 
-[Google](https://google.com)is a good resource
+[Google](https://google.com) is a good resource
 for checking out facts.
 [Leetcode](https://google.com)is also a good
 platform for practicing coding. What is
@@ -22,11 +53,12 @@ Some External Link: [Github](https://github.com)
 
 hello should be Below:
 
-Checking inline code highlight: `export default ContentLayout;{:js}`
-
-`npm install next-mdx-remote{:sh}`
+Checking inline code highlight: `export default ContentLayout;{:js}`. Lets see the continuation `npm install next-mdx-remote{:sh}` line so that we can have better `visualization` of some code in a sentence.
 
 The name of the function is `getStringLength{:.fn}`
+
+Lets put an image in here:
+![here](https://picsum.photos/800/200)
 
 # Steps in action
 
@@ -51,8 +83,8 @@ module.exports = {
     extend: {
       keyframes: {
         'accordion-down': {
-          from: { height: '0' },
-          to: { height: 'var(--radix-accordion-content-height)' },
+          from: { height: '0' }, //   [!code --]
+          to: { height: 'var(--radix-accordion-content-height)' }, // [!code --]
         },
         'accordion-up': {
           from: { height: 'var(--radix-accordion-content-height)' },
@@ -89,7 +121,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
 import rehypeSanitize from 'rehype-sanitize';
-import wrongRemarkToc from 'remark-toc'; // [!code --]
+import remarkTocBug from 'remark-toc'; // [!code --]
 import remarkToc from 'remark-toc'; // [!code ++]
 
 // slug has values like: ["system-design", "tiny-url"]
@@ -122,13 +154,13 @@ const ContentLayout = async ({ params }: ContentPageProps) => {
         format: 'mdx',
       },
     },
-    components: MdxComponents,
-  });
+    components: MdxComponents, // [!code ++]
+  }); // [!code ++]
 
   return (
     <div>
-      <h1>{frontmatter.title}</h1>
-      <h1>{frontmatter.description}</h1>
+      <h1>{frontmatter.title}</h1>  // [!code --]
+      <h1>{frontmatter.description}</h1> // [!code --]
 
       {content}
     </div>
@@ -290,7 +322,7 @@ Analyse the profile using tool `pprof`. The following command will launch into i
 go tool pprof cpu.out
 ```
 
-Various types of profile:
+Various types of profile: Ordered List
 
 - CPU Profile
 - Memory Profile
@@ -302,9 +334,18 @@ Various types of profile:
 - Threadcreate Profile
 - Debug Trace
 
+Lets see ordered list
+
+1. What
+2. THe
+3. Hell is
+4. going on
+
 Let's see some tables
 
-| heading1 | heading2 | heading3 |
-| -------- | -------- | -------- |
-| data1    | data2    | data3    |
-| data1    | data2    | data3    |
+| heading1      | heading2                      | heading3 |
+| ------------- | ----------------------------- | -------- |
+| data1, `code` | data2 data2 data2 data2 data2 | data3    |
+| data1         | data2                         | data3    |
+| data1         | data2                         | data3    |
+| data1         | data2                         | data3    |

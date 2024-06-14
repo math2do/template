@@ -1,0 +1,12 @@
+/* Why not put the style with prose-wrapper ? 
+Because prose will style all prose:a as same, both external link/a and internal Link
+Same goes for prose:code, the style will be same for code in paragraph and code inside pre tag.
+So to style the same tag differently we using following styles
+Note: Following styles is applied after prose style is added, So that we ovverride the things that we don't like with prose
+*/
+
+.mdx {
+  h1 > a {
+    @apply text-foreground transition duration-300 hover:text-foreground hover:no-underline;
+  }
+}

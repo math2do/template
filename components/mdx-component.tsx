@@ -4,10 +4,9 @@ import MaxWidthWrapper from '@/components/max-width-wrapper';
 import MdxWrapper from '@/components/prose-wrapper';
 import ThemeToggler from '@/components/theme-toggler';
 import ExternalLink from '@/components/external-link';
-import Hello from '@/components/hello';
 import { CopyButton } from '@/components/copy-button';
 import { cn } from '@/lib/utils';
-
+import { LineElement } from 'rehype-pretty-code';
 // new import
 import { promises as fs } from 'fs';
 import { compileMDX } from 'next-mdx-remote/rsc';
@@ -25,11 +24,50 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
 import { LinkIcon } from 'lucide-react';
 import SiteFooter from './site-footer';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import { getTableOfContents } from '@/lib/toc';
+import Image from 'next/image';
+import { ImageProps } from 'next/image';
+import { DashboardTableOfContents } from './toc';
 
 // You needn't have import components in mdx if file is for remotely rendered, since you're passing it here
-// !! Order of CSS: rehype plugins -> prose-css -> tailwind typography extend -> these components below
+// !! Order of CSS: rehype plugins -> prose-css -> these components below -> custom mdx.css
 export const customComponents = {
-  a: ExternalLink,
+  a: ({
+    className,
+    insideHeading,
+    href,
+    children,
+    ...props
+  }: React.HTMLAttributes<HTMLAnchorElement> & {
+    insideHeading?: boolean;
+    href?: string;
+  }) => {
+    if (insideHeading) {
+      return (
+        <Link
+          className={cn(
+            className,
+            'group flex items-center gap-2 text-[1em] font-semibold text-foreground transition duration-300 hover:text-blue-400  hover:no-underline',
+          )}
+          href={href || '#'}
+          {...props}
+        >
+          {children}
+          <LinkIcon
+            strokeWidth={1}
+            className="hidden h-[0.7em] w-[0.7em] group-hover:inline-block"
+          />
+        </Link>
+      );
+    }
+    return (
+      <ExternalLink className={className} href={href || '#'} {...props}>
+        {children}
+      </ExternalLink>
+    );
+  },
   Link,
   pre: ({
     className,
@@ -60,6 +98,50 @@ export const customComponents = {
       {...props}
     />
   ),
+
+  table: ({ className, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
+    <div className="my-6 w-full overflow-y-auto">
+      <table className={cn('w-full border-collapse', className)} {...props} />
+    </div>
+  ),
+  tr: ({ className, ...props }: React.HTMLAttributes<HTMLTableRowElement>) => (
+    <tr
+      className={cn('m-0 border-t p-0 even:bg-muted', className)}
+      {...props}
+    />
+  ),
+  th: ({ className, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
+    <th
+      className={cn(
+        'border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right',
+        className,
+      )}
+      {...props}
+    />
+  ),
+  td: ({ className, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
+    <td
+      className={cn(
+        'border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right',
+        className,
+      )}
+      {...props}
+    />
+  ),
+  img: ({
+    className,
+    alt,
+    ...props
+  }: React.ImgHTMLAttributes<HTMLImageElement>) => (
+    <Image
+      sizes="100vw"
+      height={100}
+      width={100}
+      alt={alt || 'some image'}
+      className={cn('h-auto w-full rounded-md', className)}
+      {...(props as Omit<ImageProps, 'alt'>)}
+    />
+  ),
 };
 
 export default async function MDXComponent({ slug }: { slug: string }) {
@@ -79,6 +161,7 @@ export default async function MDXComponent({ slug }: { slug: string }) {
       mdxOptions: {
         format: 'mdx',
         remarkPlugins: [
+          remarkMath,
           remarkParse,
           remarkMdx,
           remarkGfm,
@@ -87,14 +170,19 @@ export default async function MDXComponent({ slug }: { slug: string }) {
         ],
         rehypePlugins: [
           // TODO: Add the functionality of slug. It was removed because headings were becoming external link
-          // rehypeSlug,
-          // [rehypeAutolinkHeadings, { behavior: 'wrap' }],
+          rehypeSlug,
+          [rehypeAutolinkHeadings, { behavior: 'wrap' }],
           rehypePreProcess,
+          rehypeKatex,
           [
             rehypePrettyCode,
             {
               transformers: [transformerNotationDiff()],
-              theme: 'one-light', // checkout other themes here: https://shiki.style/themes
+              // theme: 'one-light', // checkout other themes here: https://shiki.style/themes
+              theme: {
+                dark: 'one-dark-pro',
+                light: 'one-light',
+              },
               keepBackground: false,
               tokensMap: {
                 fn: 'entity.name.function', //check here : https://rehype-pretty.pages.dev/
@@ -107,12 +195,16 @@ export default async function MDXComponent({ slug }: { slug: string }) {
       },
     },
   });
+
   // TODO: Use the frontmatter
   // console.log('frontmatter', frontmatter);
+
+  const toc = await getTableOfContents(mdxContent);
 
   return (
     <MaxWidthWrapper>
       <ThemeToggler />
+      <DashboardTableOfContents toc={toc} />
       <MdxWrapper>{content}</MdxWrapper>
       <SiteFooter />
     </MaxWidthWrapper>

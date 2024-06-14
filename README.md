@@ -26,8 +26,5 @@ npm run dev
 
 TODO:
 
-- React Components not rendering inside mdx file
 - Dual theme, for both light and dark mode is not supported in rehype-pretty-code
-- dig diff style is not good when showLineNumbers is disabled
-- Line number in git diff is not correct
-- Remove the comment [!code --] also becoming copied
+- Styling Images

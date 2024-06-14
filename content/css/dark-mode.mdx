@@ -1,0 +1,28 @@
+---
+title: dark mode
+description: dark mode in css using variables
+---
+
+Dark mode is achieved by manipulating variables in css. Here are the steps needed to make dark mode:
+
+- declare color variables in root of the project which will be used by referencing them in the body.
+
+```css
+html {
+  foreground: '#fdfsdf';
+  muted-foreground: '#fdfsdf';
+  muted: '#fsfs';
+}
+```
+
+- Override the default light colors by dark variants, if `html` has class `dark`.
+
+```css
+html.dark {
+  foreground: '#dark-color';
+  muted-foreground: '#dark-color';
+  muted: '#dark-color';
+}
+```
+
+- Now using javascript, add or remove the class `dark` from tag `html`. So the idea is that, since variables are used for coloring the body, we can ovverride these variables by adding or removing class `dark` from tag `html`.

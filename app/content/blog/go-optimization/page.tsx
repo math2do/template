@@ -9,7 +9,7 @@ export default async function Page() {
   // 1. With Remote Approach
   return <MDXComponent slug="" />;
 
-  // 2. Local Approach with import
+  // // 2. Local Approach with import
   // return (
   //   <MaxWidthWrapper>
   //     <ThemeToggler />
