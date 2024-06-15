@@ -7,7 +7,6 @@ import ExternalLink from '@/components/external-link';
 import { CopyButton } from '@/components/copy-button';
 import { cn } from '@/lib/utils';
 import { LineElement } from 'rehype-pretty-code';
-// new import
 import { promises as fs } from 'fs';
 import { compileMDX } from 'next-mdx-remote/rsc';
 import remarkParse from 'remark-parse';
@@ -48,8 +47,8 @@ export const customComponents = {
       return (
         <Link
           className={cn(
-            className,
             'group flex items-center gap-2 text-[1em] font-semibold text-foreground transition duration-300 hover:text-blue-400  hover:no-underline',
+            className,
           )}
           href={href || '#'}
           {...props}
@@ -68,7 +67,22 @@ export const customComponents = {
       </ExternalLink>
     );
   },
-  Link,
+  Link: ({
+    className,
+    href,
+    ...props
+  }: React.HTMLAttributes<HTMLAnchorElement> & { href?: string }) => {
+    return (
+      <Link
+        href={href || '#'}
+        {...props}
+        className={cn(
+          'text-blue-500 transition duration-300 hover:text-blue-400 hover:underline hover:underline-offset-4',
+          className,
+        )}
+      />
+    );
+  },
   pre: ({
     className,
     children,
@@ -113,7 +127,7 @@ export const customComponents = {
   th: ({ className, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
     <th
       className={cn(
-        'border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right',
+        'px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right',
         className,
       )}
       {...props}
@@ -122,7 +136,16 @@ export const customComponents = {
   td: ({ className, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
     <td
       className={cn(
-        'border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right',
+        'px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right',
+        className,
+      )}
+      {...props}
+    />
+  ),
+  blockquote: ({ className, ...props }: React.HTMLAttributes<HTMLElement>) => (
+    <blockquote
+      className={cn(
+        'm-0  border-l-blue-400 ps-2 font-normal not-italic',
         className,
       )}
       {...props}

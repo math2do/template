@@ -66,41 +66,4 @@
   .underlined::after {
     @apply absolute -bottom-[0.2em] left-1/2 h-[0.15em] w-[80%] -translate-x-1/2 rounded-sm bg-primary content-[''];
   }
-
-  /* for steps in mdx */
-  .steps:first-child > h3:first-child {
-    @apply mt-0;
-  }
-  .steps > h3 {
-    @apply mb-4 mt-8 text-base font-semibold;
-  }
-
-  .step {
-    counter-increment: step;
-  }
-
-  .step:before {
-    @apply absolute inline-flex h-9 w-9 items-center justify-center rounded-full border-4 border-background bg-muted text-center -indent-px font-mono text-base font-medium;
-    @apply ml-[-50px] mt-[-7px];
-    content: counter(step);
-  }
-
-  pre:hover .copy-button,
-  .copy-button:hover {
-    /* TODO: remove if you want copy button on hover of pre, add 'opacity-1 invisible [transition:visibility_0.1s,_opacity_0.1s_linear]' on copy-button */
-    /* visibility: visible;
-    opacity: 1; */
-  }
-
-  code[data-theme*=' '],
-  code[data-theme*=' '] span {
-    color: var(--shiki-light);
-    background-color: var(--shiki-light-bg);
-  }
-
-  .dark code[data-theme*=' '],
-  .dark code[data-theme*=' '] span {
-    color: var(--shiki-dark);
-    background-color: var(--shiki-dark-bg);
-  }
 }

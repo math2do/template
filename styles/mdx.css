@@ -6,7 +6,128 @@ Note: Following styles is applied after prose style is added, So that we ovverri
 */
 
 .mdx {
-  h1 > a {
-    @apply text-foreground transition duration-300 hover:text-foreground hover:no-underline;
+  /* some variables for pre code  */
+  pre {
+    --colors-gray-400: #9ca3af;
+    --colors-blue-400: rgb(59 130 246);
+
+    @apply rounded-[0.25rem] border-[1px];
   }
+
+  .steps:first-child > h3:first-child {
+    @apply mt-0;
+  }
+
+  .steps > h3 {
+    @apply mb-4 mt-8 text-base font-semibold;
+  }
+
+  .step {
+    counter-increment: step;
+  }
+
+  .step:before {
+    @apply absolute inline-flex h-9 w-9 items-center justify-center rounded-full border-4 border-background bg-muted text-center -indent-px font-mono text-base font-medium;
+    @apply ml-[-50px] mt-[-7px];
+    content: counter(step);
+  }
+
+  code {
+    @apply bg-muted px-[0.3rem] py-[0.2rem];
+    --shiki-light-bg: hsl(var(--muted));
+  }
+
+  pre code {
+    @apply border-0 px-0 py-2;
+    --shiki-light-bg: hsl(var(--background));
+  }
+
+  pre [data-highlighted-chars] {
+    @apply bg-transparent underline decoration-muted-foreground underline-offset-4;
+  }
+
+  pre [data-line] {
+    @apply border-l-[3px] border-l-background px-4;
+  }
+
+  pre code .line_number {
+    @apply mr-4 inline-block w-4 select-none text-right;
+    --shiki-light: var(--colors-gray-400);
+    --shiki-dark: var(--colors-gray-400);
+  }
+
+  pre [data-highlighted-line] {
+    @apply border-l-[3px] border-l-blue-400;
+    --shiki-light-bg: hsl(var(--muted));
+    --shiki-dark-bg: hsl(var(--muted));
+  }
+  pre code .diff.add {
+    @apply relative border-l-[3px] border-l-green-400;
+    --shiki-light-bg: #2dd4bf26;
+    --shiki-dark-bg: #2dd4bf26;
+  }
+
+  /* remove quote symbols from blockquote  */
+  blockquote p::after,
+  blockquote p::before {
+    content: '';
+  }
+
+  pre code .diff.remove {
+    @apply relative select-none border-l-[3px] border-l-rose-400;
+    --shiki-light-bg: #f43f5e26;
+    --shiki-dark-bg: #f43f5e26;
+  }
+
+  pre code .diff.add span,
+  pre code .diff.remove span {
+    --shiki-light-bg: transparent;
+    --shiki-dark-bg: transparent;
+  }
+
+  pre code .diff.add > span:first-child::before {
+    @apply absolute left-[2.25rem] top-0 inline-block text-green-600 content-["+"];
+  }
+
+  pre code .diff.remove > span:first-child::before {
+    @apply absolute left-[2.25rem] top-0 inline-block text-red-600 content-["-"];
+  }
+
+  [data-rehype-pretty-code-title] {
+    @apply rounded-bl-none rounded-br-none rounded-tl-[0.25rem] rounded-tr-[0.25rem] border-b-0 border-l border-r border-t;
+    @apply bg-muted px-4 py-2 text-[0.875rem] text-muted-foreground;
+  }
+
+  [data-rehype-pretty-code-title]::before {
+    @apply text-[1rem];
+    content: '📁 ';
+  }
+
+  [data-rehype-pretty-code-title] + pre {
+    @apply rounded-tl-none  rounded-tr-none;
+  }
+
+  /* Styling Latex for Mathematics */
+  .katex-html,
+  [mathvariant='normal'] {
+    @apply hidden;
+  }
+  .katex-mathml {
+    @apply text-[1.2rem];
+  }
+  msqrt > mrow:first-child {
+    @apply p-[0.2rem];
+  }
+}
+
+code[data-theme*=' '],
+code[data-theme*=' '] span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+
+.dark code[data-theme*=' '],
+.dark code[data-theme*=' '] span {
+  color: var(--shiki-dark);
+  background-color: var(--shiki-dark-bg);
 }

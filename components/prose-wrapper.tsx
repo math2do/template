@@ -13,7 +13,7 @@ export default function ProseWrapper({
       className={cn(
         'prose mt-3 max-w-none dark:prose-invert',
         'prose-a:no-underline',
-        'prose-headings:scroll-m-16 prose-headings:capitalize',
+        'prose-headings:w-fit prose-headings:scroll-m-16 prose-headings:capitalize',
         'prose-code:not-prose prose-code:rounded prose-code:border prose-code:font-normal prose-code:before:content-[""] prose-code:after:content-[""]',
         'prose-pre:bg-background prose-pre:p-0',
         'mdx',
